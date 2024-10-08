@@ -1,0 +1,94 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Live Image Feed</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @keyframes pulse {
+            0%, 100% {
+                opacity: 1;
+            }
+            50% {
+                opacity: 0.5;
+            }
+        }
+        .pulse {
+            animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
+        }
+    </style>
+</head>
+<body class="bg-gray-100 min-h-screen">
+    <div class="container mx-auto px-4 py-8">
+        <h1 class="text-4xl font-bold text-center mb-8 text-gray-800">Live Image Feed</h1>
+
+        <div class="flex flex-col md:flex-row gap-8">
+            <div class="bg-white rounded-lg shadow-lg p-6 flex-1">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Latest Image</h2>
+                <img id="latestImage" src="./images/latest.jpg" alt="Latest Image" class="w-full h-auto rounded-lg">
+                <p class="text-sm text-gray-500 mt-2 text-center">Image refreshes every 30 seconds</p>
+            </div>
+
+            <div id="videoSection" class="bg-white rounded-lg shadow-lg p-6 flex-1 flex flex-col">
+                <h2 class="text-2xl font-semibold mb-4 text-gray-800">Generate and Watch Video</h2>
+
+                <div id="videoContainer" class="flex flex-col items-center w-full">
+                    <button id="generateButton" onclick="generateVideo()" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded transition duration-300 ease-in-out transform hover:scale-105 mb-4">
+                        Generate Video
+                    </button>
+
+                    <div id="loadingIndicator" class="hidden mb-4 w-full text-center">
+                        <div class="flex items-center justify-center">
+                            <div class="w-4 h-4 bg-blue-500 rounded-full mr-2 pulse"></div>
+                            <span class="text-gray-600">Generating video...</span>
+                        </div>
+                    </div>
+
+                    <video id="videoFeed" class="w-full rounded-lg hidden mb-4" controls>
+                        <source src="./static/video.mp4" type="video/mp4">
+                        Your browser does not support the video tag.
+                    </video>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        function refreshImage() {
+            const img = document.getElementById('latestImage');
+            img.src = './images/latest.jpg?' + new Date().getTime();
+        }
+
+        function generateVideo() {
+            const loadingIndicator = document.getElementById('loadingIndicator');
+            const generateButton = document.getElementById('generateButton');
+            const videoFeed = document.getElementById('videoFeed');
+            const videoContainer = document.getElementById('videoContainer');
+
+            loadingIndicator.classList.remove('hidden');
+            generateButton.classList.add('hidden');
+
+            fetch('/generate-video')
+                .then(response => response.text())
+                .then(() => {
+                    videoFeed.src = './static/video.mp4?' + new Date().getTime();
+                    videoFeed.classList.remove('hidden');
+                    loadingIndicator.classList.add('hidden');
+                    generateButton.textContent = 'Generate New Video';
+                    generateButton.classList.remove('hidden');
+
+                    videoContainer.appendChild(generateButton);
+                })
+                .catch(error => {
+                    console.error("Error generating video:", error);
+                    loadingIndicator.classList.add('hidden');
+                    generateButton.classList.remove('hidden');
+                });
+        }
+
+        setInterval(refreshImage, 30000);
+        window.onload = refreshImage;
+    </script>
+</body>
+</html>
