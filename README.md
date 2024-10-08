@@ -44,8 +44,8 @@ Pi-Cam is a beautiful symphony of 3 services that work together to make this hap
 
    ```bash
    chmod +x ./start.sh
-   Start the party:
    ```
+   **Start the party:**
    Run the following command and watch the magic happen. This will start all three services in the background:
 
    ```bash
