@@ -22,7 +22,7 @@ def generate_video():
 
     ffmpeg_cmd = [
     'ffmpeg', '-y', '-pattern_type', 'glob', '-i', f'{video_images_dir}/*.jpg',
-    '-vf', 'scale=640:480,setpts=1.5*PTS', '-r', '24', video_output_path  # Slow down video by 2x
+    '-vf', 'scale=640:480,setpts=1.5*PTS', '-r', '24', video_output_path
     ]
 
     try:
